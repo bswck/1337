@@ -31,8 +31,17 @@ onerror() {
 
 trap 'onerror $LINENO' ERR
 
-MKTOPICS_LEVELS=("easy" "medium" "hard")
-MKTOPICS_SOURCES=("leetcode")
+MKTOPICS_LEVELS=(
+    "easy"
+    "medium"
+    "hard"
+)
+
+MKTOPICS_SOURCES=(
+    "leetcode"
+    "codeforces"
+)
+
 MKTOPICS_LEETCODE_TOPICS=(
     "Array"
     "String"
@@ -105,6 +114,45 @@ MKTOPICS_LEETCODE_TOPICS=(
     "Radix Sort"
 )
 
+MKTOPICS_CODEFORCES_TOPICS=(
+    "2-sat"
+    "binary search"
+    "bitmasks"
+    "brute force"
+    "chinese remainder theorem"
+    "combinatorics"
+    "constructive algorithms"
+    "data structures"
+    "dfs and similar"
+    "divide and conquer"
+    "dp"
+    "dsu"
+    "expression parsing"
+    "fft"
+    "flows"
+    "games"
+    "geometry"
+    "graph matchings"
+    "graphs"
+    "greedy"
+    "hashing"
+    "implementation"
+    "interactive"
+    "math"
+    "matrices"
+    "meet-in-the-middle"
+    "number theory"
+    "probabilities"
+    "schedules"
+    "shortest paths"
+    "sortings"
+    "string suffix structures"
+    "strings"
+    "ternary search"
+    "trees"
+    "two pointers"
+)
+
 entrypoint() {
     local topic source dest_info source_info vcs_aware=0
     test "${1:-}" = "--vcs-aware" && vcs_aware=1
@@ -120,6 +168,7 @@ entrypoint() {
             source_info="\033[0;34m$source\033[0m"
             echo -e "${__OK} ($source_info) Created topic \"$topic\" $dest_info"
         done
+        unset -n source_ptr
     done
 }
 
