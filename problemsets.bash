@@ -10,19 +10,19 @@
 
 set -eEuo pipefail
 
-: "${MKTOPICS_SOURCES_DIR:=./sources}"
+: "${PROBLEMSET_SOURCES_DIR:=./problemsets}"
 
-MKTOPICS_LEVELS=(
+PROBLEMSET_LEVELS=(
     "easy"
     "medium"
     "hard"
 )
 
-mktopic() {
-    local d dl lv lvs kf="${MKTOPICS_KEEPFILE:=.gitkeep}"
-    test "$1$2" || (echo "Usage: mktopic <source> <topic> [levels...]" >&2 && return 1)
+build() {
+    local d dl lv lvs kf="${PROBLEMSET_KEEPFILE:=.gitkeep}"
+    test "$1$2" || (echo "Usage: build <source> <topic> [levels...]" >&2 && return 1)
     d="$1/$(echo "$2" | tr '[:upper:]' '[:lower:]' | tr -d "()" | tr -cs '[:alnum:]\n' '_')"
-    shift 2; lvs=("${@:-${MKTOPICS_LEVELS[@]}}"); for lv in "${lvs[@]}"
+    shift 2; lvs=("${@:-${PROBLEMSET_LEVELS[@]}}"); for lv in "${lvs[@]}"
     do mkdir -p "${dl:=$d/$lv}" \
         && if test "$(git ls-files "$dl" -x "$kf" --exclude-standard --others)"
         then rm -f "$dl/$kf"; else touch "$dl/$kf"; fi; unset dl
@@ -33,19 +33,19 @@ mktopic() {
 entrypoint() {
     local topic source source_files dest_info source_info vcs_aware=0
     test "${1:-}" = "--vcs-aware" && vcs_aware=1
-    readarray -t source_files <<< "$(find "$MKTOPICS_SOURCES_DIR" -type f -name "*.txt")"
-    echo -e "\033[0;32m✔\033[0m Found \033[0;34m${#source_files[@]}\033[0m source(s): ${source_files[*]}"
+    readarray -t source_files <<< "$(find "$PROBLEMSET_SOURCES_DIR" -type f -name "*.txt")"
+    echo -e "\033[0;32m✔\033[0m Found \033[0;34m${#source_files[@]}\033[0m problemset source(s): ${source_files[*]}"
     for source_file in "${source_files[@]}"
     do
         source=$(basename "$source_file" .txt)
         readarray -t topics < "$source_file"
         for topic in "${topics[@]}"
         do
-            created_topic=$(mktopic "$source" "$topic")
-            [ $vcs_aware -eq 1 ] && git add --intent-to-add "$created_topic"
-            dest_info="\033[0;36m→ $created_topic\033[0m"
+            built=$(build "$source" "$topic")
+            [ $vcs_aware -eq 1 ] && git add --intent-to-add "$built"
+            dest_info="\033[0;36m→ $built\033[0m"
             source_info="\033[0;34m$source\033[0m"
-            echo -e "\033[0;32m✔\033[0m ($source_info) Created topic \"$topic\" $dest_info"
+            echo -e "\033[0;32m✔\033[0m ($source_info) Built topic \"$topic\" $dest_info"
         done
     done
 }

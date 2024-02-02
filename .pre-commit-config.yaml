@@ -3,8 +3,8 @@
 repos:
 - repo: "local"
   hooks:
-  - id: "mktopics"
-    name: "Run ./mktopics.bash"
-    entry: "./mktopics.bash --vcs-aware"
+  - id: "problemsets"
+    name: "Run ./problemsets.bash"
+    entry: "./problemsets.bash --vcs-aware"
     language: "system"
     pass_filenames: false
